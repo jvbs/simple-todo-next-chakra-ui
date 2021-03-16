@@ -1,12 +1,13 @@
+import Head from "next/head";
 import { useState, useEffect } from "react";
-import { Heading, VStack, IconButton } from "@chakra-ui/react";
+import { Heading, VStack, IconButton, useColorMode } from "@chakra-ui/react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import TodoList from "../components/TodoList";
 import AddTodo from "../components/AddTodo";
 
 // import initialTodos from "../data";
 
-export default function Home() {
+export default function Home(props) {
   //* Because of lifecycle hooks, while the component is being rendered
   //* you need to declare the state as empty, and after that, useEffect
   //* to get the value of localStorage, and you need to call window because
@@ -16,6 +17,8 @@ export default function Home() {
   //? https://stackoverflow.com/a/55151122/6580518
 
   const [todos, setTodos] = useState([]);
+
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
     const localTodos = JSON.parse(localStorage.getItem("todos"));
@@ -43,12 +46,16 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>A Simple ToDo App</title>
+      </Head>
       <VStack p={4}>
         <IconButton
-          icon={<FaSun />}
+          icon={colorMode === "dark" ? <FaMoon /> : <FaSun />}
           isRound={true}
           size="lg"
           alignSelf="flex-end"
+          onClick={toggleColorMode}
         ></IconButton>
         <Heading
           mb="8"
