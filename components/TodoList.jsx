@@ -5,10 +5,24 @@ import {
   IconButton,
   StackDivider,
   Spacer,
+  Stack,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 
-const TodoList = ({ todos }) => {
+const TodoList = ({ todos, deleteTodo }) => {
+  if (todos.length === 0) {
+    return (
+      <Stack spacing={3}>
+        <Alert status="success" w="100%">
+          <AlertIcon />
+          There's no To Do's available here.
+        </Alert>
+      </Stack>
+    );
+  }
+
   return (
     <VStack
       divider={<StackDivider />}
@@ -24,7 +38,13 @@ const TodoList = ({ todos }) => {
         <HStack key={todo.id}>
           <Text>{todo.name}</Text>
           <Spacer />
-          <IconButton icon={<FaTrash />} isRound={true} />
+          <IconButton
+            onClick={() => {
+              deleteTodo(todo.id);
+            }}
+            icon={<FaTrash />}
+            isRound={true}
+          />
         </HStack>
       ))}
     </VStack>
