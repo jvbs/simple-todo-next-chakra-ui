@@ -1,13 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heading, VStack, IconButton } from "@chakra-ui/react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import TodoList from "../components/TodoList";
 import AddTodo from "../components/AddTodo";
 
-import data from "../data";
+// import initialTodos from "../data";
 
 export default function Home() {
-  const [todos, settodos] = useState(data);
+  //* Because of lifecycle hooks, while the component is being rendered
+  //* you need to declare the state as empty, and after that, useEffect
+  //* to get the value of localStorage, and you need to call window because
+  //* Next.js overrides it everywhere excepts on componentDidMount() hook.
+
+  //? https://stackoverflow.com/a/59540455/6580518
+  //? https://stackoverflow.com/a/55151122/6580518
+
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    const localTodos = JSON.parse(localStorage.getItem("todos"));
+
+    setTodos(localTodos);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = (todo) => {
+    const currentTodos = [...todos, todo];
+
+    setTodos(currentTodos);
+  };
+
+  const deleteTodo = (id) => {
+    const newTodos = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+
+    setTodos(newTodos);
+  };
+
   return (
     <>
       <VStack p={4}>
@@ -26,8 +59,8 @@ export default function Home() {
         >
           A Simple ToDo App
         </Heading>
-        <TodoList todos={todos} />
-        <AddTodo />
+        <TodoList todos={todos} deleteTodo={deleteTodo} />
+        <AddTodo addTodo={addTodo} />
       </VStack>
     </>
   );
